@@ -9,7 +9,47 @@ generator client {
   output   = "../src/generated/prisma"
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+datasource db { provider = "mysql"; url = env("DATABASE_URL") }
+generator client { provider = "prisma-client-js" }
+
+model Product {
+  id          String   @id @default(cuid())
+  sku         String   @unique
+  name        String
+  priceCents  Int
+  currency    String   @default("MXN")
+  stock       Int      @default(0)
+  abv         Int
+  volumeMl    Int
+  origin      String
+  description String?
+  imageUrl    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  OrderItem   OrderItem[]
+} 
+
+model Order {
+  id            String      @id @default(cuid())
+  email         String
+  shippingJson  Json
+  subtotalCents Int
+  shippingCents Int
+  totalCents    Int
+  currency      String      @default("MXN")
+  status        String      @default("new")
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  items         OrderItem[]
+} 
+
+model OrderItem {
+  id             String  @id @default(cuid())
+  orderId        String
+  productId      String
+  qty            Int
+  unitPriceCents Int
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+} 
