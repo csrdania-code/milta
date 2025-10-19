@@ -4,31 +4,32 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
-datasource db { provider = "mysql"; url = env("DATABASE_URL") }
-generator client { provider = "prisma-client-js" }
+generator client {
+  provider = "prisma-client-js"
+}
 
 model Product {
-  id          String   @id @default(cuid())
-  sku         String   @unique
+  id          String      @id @default(cuid())
+  sku         String      @unique
   name        String
   priceCents  Int
-  currency    String   @default("MXN")
-  stock       Int      @default(0)
+  currency    String      @default("MXN")
+  stock       Int         @default(0)
   abv         Int
   volumeMl    Int
   origin      String
   description String?
   imageUrl    String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
   OrderItem   OrderItem[]
-} 
+}
 
 model Order {
   id            String      @id @default(cuid())
@@ -42,7 +43,7 @@ model Order {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   items         OrderItem[]
-} 
+}
 
 model OrderItem {
   id             String  @id @default(cuid())
@@ -50,6 +51,6 @@ model OrderItem {
   productId      String
   qty            Int
   unitPriceCents Int
-  order   Order   @relation(fields: [orderId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
-} 
+  order          Order   @relation(fields: [orderId], references: [id])
+  product        Product @relation(fields: [productId], references: [id])
+}
